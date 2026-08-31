@@ -1,43 +1,40 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# batch_organize.sh - 第1题：含空格文件名的批量整理
+# 在q01中创建目录/文件，复制.txt到work/，设权限，生成inventory.txt
 
-# 批量整理含空格文件名的脚本
-# 功能：将当前目录下文件名中的空格替换为下划线
+set -euo pipefail
+STUDENT_ID="25020007191"
+BASE="$(pwd)"
 
-echo "=== 含空格文件名批量整理脚本 ==="
-echo "当前目录: $(pwd)"
-echo ""
+echo "=== 创建目录结构 ==="
+mkdir -p "$BASE/input/docs" "$BASE/input/tmp"
 
-# 统计含空格的文件数量
-count=0
-for file in *; do
-    if [[ "$file" == *" "* ]]; then
-        count=$((count + 1))
-    fi
-done
+echo "=== 创建测试文件 ==="
+printf 'alpha\nbeta\n' > "$BASE/input/docs/notes one.txt"
+printf 'hidden\n'      > "$BASE/input/docs/.secret.txt"
+touch "$BASE/input/tmp/empty.txt"
+printf 'line1: boot ok\nline2: ssh ok\n' > "$BASE/input/run.log"
 
-echo "发现 $count 个包含空格的文件"
-echo ""
+echo "=== q01 绝对路径 ==="
+readlink -f "$BASE"
 
-if [ $count -eq 0 ]; then
-    echo "没有需要处理的文件"
-    exit 0
-fi
+echo "=== ls -la input（含隐藏文件）==="
+ls -la "$BASE/input"
 
-# 处理包含空格的文件
-echo "开始重命名文件..."
-for file in *; do
-    if [[ "$file" == *" "* ]]; then
-        # 将空格替换为下划线
-        new_name="${file// /_}"
-        echo "重命名: \"$file\" -> \"$new_name\""
-        mv "$file" "$new_name"
-    fi
-done
+echo "=== 复制 .txt 文件到 work/$STUDENT_ID（保留相对目录结构）==="
+mkdir -p "$BASE/work/$STUDENT_ID"
+cd "$BASE/input" && find . -name '*.txt' -exec cp --parents {} "$BASE/work/$STUDENT_ID/" \;
 
-echo ""
-echo "整理完成！"
-echo ""
+echo "=== 设置权限：目录750，文件640 ==="
+find "$BASE/work/$STUDENT_ID" -type d -exec chmod 750 {} +
+find "$BASE/work/$STUDENT_ID" -type f -exec chmod 640 {} +
 
-# 显示整理后的文件列表
-echo "整理后的文件列表:"
-ls -la
+echo "=== 生成 inventory.txt ==="
+cd "$BASE/work/$STUDENT_ID"
+find . -type f ! -name inventory.txt -printf '%P %s\n' | sort > inventory.txt
+
+echo "=== inventory.txt 内容 ==="
+cat inventory.txt
+
+echo "=== 最终目录结构 ==="
+find "$BASE" -type f -o -type d | sort
