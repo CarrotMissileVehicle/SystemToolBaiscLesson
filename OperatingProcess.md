@@ -23,6 +23,7 @@ G:\CSProjects\SystemToolBaiscLesson\
 
 1. 请先阅读 `ReportTemplate.md` ，这是实验报告模板，再去以此书写实验报告
 2. 写完md版实验报告后请阅读 `md-to-pdf-guide.md` ，里面记录了md转pdf文件的方法，将其转为pdf并放入Report文件夹中
+3. **必须将md文件转换为PDF**：每完成一道题目或课后练习后，必须使用 `md2pdf` 命令将实验报告转换为PDF格式，并保存到 `Report/` 目录下
 
 ## 执行流程
 
